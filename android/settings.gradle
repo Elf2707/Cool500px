@@ -1,0 +1,3 @@
+rootProject.name = 'Cool500px'
+
+include ':app'
