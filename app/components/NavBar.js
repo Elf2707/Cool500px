@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
     btnIcon: {
         justifyContent: 'center',
         alignItems: 'center',
-        height: DimensionUtils.getHeightDimInPerc(4.5),
-        width: DimensionUtils.getHeightDimInPerc(4.5),
+        height: DimensionUtils.getHeightDimInPerc(5),
+        width: DimensionUtils.getHeightDimInPerc(5),
     },
 
     titleCont: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     ballparkFont: {
         ...Platform.select({
             ios: {
-                fontFamily: 'ballpark_weiner',
+                fontFamily: 'Ballpark',
             },
 
             android: {

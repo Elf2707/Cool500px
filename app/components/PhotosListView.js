@@ -191,8 +191,10 @@ export default class PhotosListView extends Component {
         });
 
         // Test if array empty scroll list to the top
+        console.log('sssssssssssssssssssssssssssss')
         if (newProps.photos.length === 0) {
-            this.list && this.list.scrollTo({});
+            console.log('ddddddddddddddddddddddddddd')
+            //this.list.scrollTo({x: 0, y: 0, animated: true});
         }
     }
 
@@ -222,6 +224,7 @@ const styles = StyleSheet.create({
 
     photoButton: {
         height: DimensionUtils.getHeightDimInPerc(18),
+        overflow: 'hidden'
     },
 
     photo: {
@@ -242,6 +245,7 @@ const styles = StyleSheet.create({
     photoInfoContainer: {
         justifyContent: 'flex-end',
         height: DimensionUtils.getHeightDimInPerc(18),
+        backgroundColor: 'transparent',
         padding: 5,
     },
 

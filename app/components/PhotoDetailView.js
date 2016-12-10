@@ -2,7 +2,7 @@
  * Created by Elf on 08.07.2016.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, WebView } from 'react-native';
+import { View, Text, StyleSheet, WebView, ActivityIndicator } from 'react-native';
 
 import ApiConfig from './../config/ApiConfig';
 import NavBar from './NavBar';
@@ -29,8 +29,20 @@ export default class PhotoView extends Component {
                         style={styles.webView}
                         loadingProgressBar={styles.webViewSpinner}
                         source={{uri: `${ApiConfig.site500pxPrefixUrl}${this.props.photo.url}`}}
-                        startInLoadingState={true}/>
+                        startInLoadingState={true}
+                        renderLoading={this.renderSpinner.bind(this)}/>
                 </View>
+            </View>
+        );
+    }
+
+    renderSpinner() {
+        return (
+            <View style={styles.spinnerContainer}>
+                <ActivityIndicator
+                    animating={true}
+                    color={'#03A9F4'}
+                    size="large"/>
             </View>
         );
     }
@@ -49,7 +61,9 @@ const styles = StyleSheet.create({
         flex: 90,
     },
 
-    webViewSpinner: {
-        color: '#03A9F4'
+    spinnerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
