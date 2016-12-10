@@ -15,9 +15,10 @@ class PhotosList extends Component {
             <PhotosListView
                 photos={this.props.photos}
                 isPhotosPending={this.props.isPhotosPending}
+                isError={this.props.isError}
                 onPickUpPhoto={this._handlePickUpPhoto.bind(this)}
                 refresh={this._handleRefresh.bind(this)}
-                onEndPhotosReached={this._handleOnPhotosEndReached.bind(this)}/>
+                onEndPhotosReached={this._handleOnEndPhotosReached.bind(this)}/>
         )
     }
 
@@ -34,8 +35,11 @@ class PhotosList extends Component {
         })
     }
 
-    _handleOnPhotosEndReached() {
-        //this.props.fetchPhotos(this.props.lastFetchedPhoto);
+    _handleOnEndPhotosReached() {
+        // Test if no all photos fetched and fetch another page
+        if (this.props.currentPage < this.props.totalPages) {
+            this.props.fetchPhotos(this.props.currentPage + 1);
+        }
     }
 
     _handleRefresh() {
@@ -47,8 +51,8 @@ class PhotosList extends Component {
 const mapStateToProps = (state) => {
     return ({
         photos: state.photosList.photos,
-        current_page: state.photosList.current_page,
-        total_pages: state.photosList.total_pages,
+        currentPage: state.photosList.currentPage,
+        totalPages: state.photosList.totalPages,
         isPhotosPending: state.photosList.isPhotosPending,
         isError: state.photosList.isError,
     });

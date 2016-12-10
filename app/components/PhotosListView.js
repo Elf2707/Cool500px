@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ListView, Image, ActivityIndi
 import * as Animatable from 'react-native-animatable';
 
 import PropsConfig from './../config/PropsConfig';
+import ErrorMessages from './../config/ErrorMessages';
 import NavBar from './NavBar';
 import DimensionUtils from './../utils/dimensionUtils';
 
@@ -13,6 +14,7 @@ export default class PhotosListView extends Component {
     static propTypes = {
         photos: React.PropTypes.array.isRequired,
         isPhotosPending: React.PropTypes.bool.isRequired,
+        isError: React.PropTypes.bool.isRequired,
         onEndPhotosReached: React.PropTypes.func.isRequired,
         onPickUpPhoto: React.PropTypes.func.isRequired,
         refresh: React.PropTypes.func.isRequired,
@@ -38,32 +40,41 @@ export default class PhotosListView extends Component {
                     onActionBtnPress={this.props.refresh}/>
 
                 <View style={styles.listContainer}>
-                    <ListView contentContainerStyle={styles.photosGrid}
-                              dataSource={this.state.dataSource}
-                              onEndReached={this.props.endPhotosReached}
-                              onEndReachedThreshold={DimensionUtils.getHeightDimInPerc(18)} // Row height
-                              showsVerticalScrollIndicator={false}
-                              enableEmptySections={true}
-                              renderRow={this.renderPhotoCell.bind(this)}
-                              renderSeparator={this.renderSeparator.bind(this)}
-                              renderFooter={this.renderFooter.bind(this)}
-                              render
-                              pageSize={PropsConfig.photosPerPage}/>
+                    {this.renderList()}
                 </View>
             </View>
         );
     }
 
-    renderPhotoCell(photo, sectionId, rowId) {
+    renderList() {
+        if (this.props.isError) {
+            return (
+                <Text style={[styles.text2per, styles.whiteText]}>
+                    {ErrorMessages.internetDisable}</Text>
+            );
+        }
+
+        return (
+            <ListView
+                dataSource={this.state.dataSource}
+                onEndReached={this.props.onEndPhotosReached}
+                onEndReachedThreshold={DimensionUtils.getHeightDimInPerc(18)} // Row height
+                scrollRenderAheadDistance={DimensionUtils.getHeightDimInPerc(36)} // 2 * Row height
+                showsVerticalScrollIndicator={false}
+                enableEmptySections={true}
+                renderRow={this.renderRow.bind(this)}
+                renderSeparator={this.renderSeparator.bind(this)}
+                renderFooter={this.renderFooter.bind(this)}
+                ref={(list) => {this.list = list}}
+                pageSize={PropsConfig.photosPerPage}/>
+        );
+    }
+
+    renderRow(photo, sectionId, rowId) {
         // Render two pictures per row
         if (!(rowId % 2)) {
-            const nextPhotoIndex = parseInt(rowId);
-            const nextPhoto = this.props.photos.length >= nextPhotoIndex + 1 ?
-                this.props.photos[nextPhotoIndex + 1] : null;
-
             // Calc photos ratio, width, height
             const firstPhotoRatio = photo.height / photo.width;
-            const secondPhotoRatio = nextPhoto.height / nextPhoto.width;
 
             // Calc new width for both pictures making nice grid layout
             // even pairs and odd pairs slightly different
@@ -76,6 +87,11 @@ export default class PhotosListView extends Component {
             if (firstPhotoNewHeight < rowHeight) {
                 firstPhotoNewHeight = rowHeight;
             }
+
+            // Calc if where is a second photo for that row
+            const nextPhotoIndex = parseInt(rowId);
+            const nextPhoto = this.props.photos.length >= nextPhotoIndex + 1 ?
+                this.props.photos[nextPhotoIndex + 1] : null;
 
             if (nextPhoto) {
                 var secondPhotoRatio = nextPhoto.height / nextPhoto.width;
@@ -115,12 +131,13 @@ export default class PhotosListView extends Component {
 
                     <View style={styles.verticalSeparator}/>
 
-                    {nextPhoto &&
                     <TouchableOpacity
-                        style={[styles.photoButton, {flex: secondPhotoNewWidth}]}
+                        style={[styles.photoButton,
+                            {flex: nextPhoto ? secondPhotoNewWidth : 100 - firstPhotoNewWidth}]}
                         activeOpacity={0.4}
                         onPress={this._handlePhotoClick.bind(this, nextPhoto)}>
 
+                        {nextPhoto &&
                         <Animatable.Image
                             style={[styles.photo,{ width: secondPhotoNewWidth, height: secondPhotoNewHeight}]}
                             source={{uri: nextPhoto.image_url}}
@@ -136,8 +153,8 @@ export default class PhotosListView extends Component {
                                         {nextPhoto.user ? nextPhoto.user.fullname : 'Uncknown'}</Text>
                                 </View>
                             </View>
-                        </Animatable.Image>
-                    </TouchableOpacity>}
+                        </Animatable.Image>}
+                    </TouchableOpacity>
                 </View>
             );
         }
@@ -148,7 +165,7 @@ export default class PhotosListView extends Component {
     renderFooter() {
         if (this.props.isPhotosPending) {
             return (
-                <View style={styles.transactionsFooter}>
+                <View style={styles.footer}>
                     <ActivityIndicator
                         animating={true}
                         color={'#03A9F4'}
@@ -172,6 +189,11 @@ export default class PhotosListView extends Component {
         this.setState({
             dataSource: this.ds.cloneWithRows(newProps.photos)
         });
+
+        // Test if array empty scroll list to the top
+        if (newProps.photos.length === 0) {
+            this.list && this.list.scrollTo({});
+        }
     }
 
     _handlePhotoClick(photo) {
@@ -231,7 +253,7 @@ const styles = StyleSheet.create({
         fontSize: DimensionUtils.getHeightDimInPerc(2),
     },
 
-    transactionsFooter: {
+    footer: {
         justifyContent: 'center',
         alignItems: 'center',
         padding: 5,

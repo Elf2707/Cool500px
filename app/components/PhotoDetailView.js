@@ -27,6 +27,7 @@ export default class PhotoView extends Component {
                     animation={'fadeIn'}>
                     <WebView
                         style={styles.webView}
+                        loadingProgressBar={styles.webViewSpinner}
                         source={{uri: `${ApiConfig.site500pxPrefixUrl}${this.props.photo.url}`}}
                         startInLoadingState={true}/>
                 </View>
@@ -46,5 +47,9 @@ const styles = StyleSheet.create({
 
     webViewContainer: {
         flex: 90,
+    },
+
+    webViewSpinner: {
+        color: '#03A9F4'
     }
 });

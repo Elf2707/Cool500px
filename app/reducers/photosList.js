@@ -25,7 +25,7 @@ export default function photosList(state = initialState, action = {}) {
             return Object.assign({}, state, {
                 photos: state.photos.concat(action.payload.photos),
                 currentPage: action.payload.current_page,
-                totalPages: action.payload.total_page,
+                totalPages: action.payload.total_pages,
                 totalItems: action.payload.total_items,
                 isPhotosPending: false,
                 isError: false,
