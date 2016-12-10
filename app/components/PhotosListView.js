@@ -2,7 +2,8 @@
  * Created by Elf on 12.06.2016.
  */
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ListView, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ListView, Image, ActivityIndicator,
+    Platform } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
 import PropsConfig from './../config/PropsConfig';
@@ -115,7 +116,7 @@ export default class PhotosListView extends Component {
                             style={[styles.photo,{ width: firstPhotoNewWidth, height: firstPhotoNewHeight}]}
                             source={{uri: photo.image_url}}
                             resizeMode={'cover'}
-                            animation={'zoomIn'}
+                            animation={'fadeIn'}
                             duration={200}>
 
                             <View style={styles.photoInfoContainer}>
@@ -141,7 +142,7 @@ export default class PhotosListView extends Component {
                         <Animatable.Image
                             style={[styles.photo,{ width: secondPhotoNewWidth, height: secondPhotoNewHeight}]}
                             source={{uri: nextPhoto.image_url}}
-                            animation={'zoomIn'}
+                            animation={'fadeIn'}
                             duration={200}
                             resizeMode={'cover'}>
 
@@ -190,11 +191,10 @@ export default class PhotosListView extends Component {
             dataSource: this.ds.cloneWithRows(newProps.photos)
         });
 
-        // Test if array empty scroll list to the top
-        console.log('sssssssssssssssssssssssssssss')
-        if (newProps.photos.length === 0) {
-            console.log('ddddddddddddddddddddddddddd')
-            //this.list.scrollTo({x: 0, y: 0, animated: true});
+        // Test if array empty scroll list to the top only for android
+        // iOS does it by default then list updates
+        if (Platform.OS === 'android' && newProps.photos.length === 0) {
+            this.list.scrollTo({x: 0, y: 0, animated: true});
         }
     }
 
