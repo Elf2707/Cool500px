@@ -68,3 +68,12 @@ export function setSelectedPhoto(photo) {
         });
     }
 }
+
+export function clearPhotos() {
+    return (dispatch) => {
+        dispatch({
+            type: ActionTypes.PHOTOS_CLEAR,
+            payload: null,
+        });
+    }
+}

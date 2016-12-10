@@ -3,6 +3,7 @@
  */
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ListView, Image, ActivityIndicator } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 import PropsConfig from './../config/PropsConfig';
 import NavBar from './NavBar';
@@ -14,6 +15,7 @@ export default class PhotosListView extends Component {
         isPhotosPending: React.PropTypes.bool.isRequired,
         onEndPhotosReached: React.PropTypes.func.isRequired,
         onPickUpPhoto: React.PropTypes.func.isRequired,
+        refresh: React.PropTypes.func.isRequired,
     };
 
     constructor(props) {
@@ -31,7 +33,9 @@ export default class PhotosListView extends Component {
                 <NavBar
                     style={styles.navBar}
                     title={'500px.com Most Popular'}
-                    backBtnOn={false}/>
+                    backBtnOn={false}
+                    actionBtnOn={true}
+                    onActionBtnPress={this.props.refresh}/>
 
                 <View style={styles.listContainer}>
                     <ListView contentContainerStyle={styles.photosGrid}
@@ -63,28 +67,50 @@ export default class PhotosListView extends Component {
 
             // Calc new width for both pictures making nice grid layout
             // even pairs and odd pairs slightly different
-            const firsPhotoNewWidth = Math.floor((rowId / 2) % 2) ?
+            let firstPhotoNewWidth = Math.floor((rowId / 2) % 2) ?
                 DimensionUtils.getWidthDimInPerc(45) : DimensionUtils.getWidthDimInPerc(55);
-            const firstPhotoNewHeight = firsPhotoNewWidth * firstPhotoRatio;
+            let firstPhotoNewHeight = firstPhotoNewWidth * firstPhotoRatio;
 
-            if( nextPhoto) {
+            // Test if new height less then row height and adjust it
+            const rowHeight = DimensionUtils.getHeightDimInPerc(18);
+            if (firstPhotoNewHeight < rowHeight) {
+                firstPhotoNewHeight = rowHeight;
+            }
+
+            if (nextPhoto) {
                 var secondPhotoRatio = nextPhoto.height / nextPhoto.width;
                 var secondPhotoNewWidth = Math.floor((rowId / 2) % 2) ?
                     DimensionUtils.getWidthDimInPerc(55) : DimensionUtils.getWidthDimInPerc(45);
                 var secondPhotoNewHeight = secondPhotoNewWidth * secondPhotoRatio;
+
+                if (secondPhotoNewHeight < rowHeight) {
+                    secondPhotoNewHeight = rowHeight;
+                }
             }
 
             return (
                 <View style={styles.listRow}>
                     <TouchableOpacity
-                        style={[styles.photoButton, {flex: firsPhotoNewWidth}]}
+                        style={[styles.photoButton, {flex: firstPhotoNewWidth}]}
                         activeOpacity={0.4}
                         onPress={this._handlePhotoClick.bind(this, photo)}>
 
-                        <Image
-                            style={[styles.photo,{ width: firsPhotoNewWidth, height: firstPhotoNewHeight}]}
+                        <Animatable.Image
+                            style={[styles.photo,{ width: firstPhotoNewWidth, height: firstPhotoNewHeight}]}
                             source={{uri: photo.image_url}}
-                            resizeMode={'cover'}/>
+                            resizeMode={'cover'}
+                            animation={'zoomIn'}
+                            duration={200}>
+
+                            <View style={styles.photoInfoContainer}>
+                                <View>
+                                    <Text style={[styles.text2per, styles.whiteText]}>
+                                        {photo.name}</Text>
+                                    <Text style={[styles.text2per, styles.whiteText]}>
+                                        {photo.user ? photo.user.fullname : 'Uncknown'}</Text>
+                                </View>
+                            </View>
+                        </Animatable.Image>
                     </TouchableOpacity>
 
                     <View style={styles.verticalSeparator}/>
@@ -95,10 +121,22 @@ export default class PhotosListView extends Component {
                         activeOpacity={0.4}
                         onPress={this._handlePhotoClick.bind(this, nextPhoto)}>
 
-                        <Image
+                        <Animatable.Image
                             style={[styles.photo,{ width: secondPhotoNewWidth, height: secondPhotoNewHeight}]}
                             source={{uri: nextPhoto.image_url}}
-                            resizeMode={'cover'}/>
+                            animation={'zoomIn'}
+                            duration={200}
+                            resizeMode={'cover'}>
+
+                            <View style={styles.photoInfoContainer}>
+                                <View>
+                                    <Text style={[styles.text2per, styles.whiteText]}>
+                                        {nextPhoto.name}</Text>
+                                    <Text style={[styles.text2per, styles.whiteText]}>
+                                        {nextPhoto.user ? nextPhoto.user.fullname : 'Uncknown'}</Text>
+                                </View>
+                            </View>
+                        </Animatable.Image>
                     </TouchableOpacity>}
                 </View>
             );
@@ -177,6 +215,20 @@ const styles = StyleSheet.create({
     separator: {
         backgroundColor: '#FFF',
         height: 1,
+    },
+
+    photoInfoContainer: {
+        justifyContent: 'flex-end',
+        height: DimensionUtils.getHeightDimInPerc(18),
+        padding: 5,
+    },
+
+    whiteText: {
+        color: '#FFF',
+    },
+
+    text2per: {
+        fontSize: DimensionUtils.getHeightDimInPerc(2),
     },
 
     transactionsFooter: {

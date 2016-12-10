@@ -4,6 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:colorPrimaryDark">#000</item>
+        <item name="android:colorAccent">#03A9F4</item>
     </style>
 
 </resources>

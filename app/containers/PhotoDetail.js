@@ -11,7 +11,8 @@ class PhotoDetail extends Component {
     render() {
         return (
             <PhotoDetailView
-                photo={this.props.photo}/>
+                photo={this.props.photo}
+                goBack={this.props.goBack}/>
         )
     }
 }

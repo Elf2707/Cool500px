@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 
 import PhotosListView from './../components/PhotosListView'
 import * as PhotosListActions from './../actions/photosListActions';
-import * as NavActions from './../actions/navActions';
+import { push } from './../actions/navActions';
 
 class PhotosList extends Component {
     render() {
@@ -16,6 +16,7 @@ class PhotosList extends Component {
                 photos={this.props.photos}
                 isPhotosPending={this.props.isPhotosPending}
                 onPickUpPhoto={this._handlePickUpPhoto.bind(this)}
+                refresh={this._handleRefresh.bind(this)}
                 onEndPhotosReached={this._handleOnPhotosEndReached.bind(this)}/>
         )
     }
@@ -36,6 +37,11 @@ class PhotosList extends Component {
     _handleOnPhotosEndReached() {
         //this.props.fetchPhotos(this.props.lastFetchedPhoto);
     }
+
+    _handleRefresh() {
+        this.props.clearPhotos();
+        this.props.fetchPhotos(1);
+    }
 }
 
 const mapStateToProps = (state) => {
@@ -51,7 +57,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return bindActionCreators({
         ...PhotosListActions,
-        ...NavActions,
+        push,
     }, dispatch);
 };
 

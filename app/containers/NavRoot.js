@@ -44,22 +44,23 @@ class NavRoot extends Component {
             return <PhotosList />
         }
         if (route.key === 'photoDetailView') {
-            return <PhotoDetail goBack={this._handleBackAction.bind(this)}/>
+            return <PhotoDetail goBack={this._handleBackAction}/>
         }
     }
 
     _handleBackAction() {
         if (this.props.navigation.index === 0) {
-            return false
+            return false;
         }
         this.props.pop();
-        return true
+
+        return true;
     }
 }
 
 const mapStateToProps = (state) => {
     return {
-        navigation: state.navReducer
+        navigation: state.navReducer,
     }
 };
 

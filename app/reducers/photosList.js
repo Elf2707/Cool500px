@@ -42,6 +42,17 @@ export default function photosList(state = initialState, action = {}) {
                 selectedPhoto: action.payload,
             });
 
+        case ActionTypes.PHOTOS_CLEAR:
+            return Object.assign({}, state, {
+                currentPage: 1,
+                totalPages: -1,
+                totalItems: 0,
+                photos: [],
+                selectedPhoto: null,
+                isPhotosPending: false,
+                isError : false,
+            });
+
         default:
             return state;
     }
